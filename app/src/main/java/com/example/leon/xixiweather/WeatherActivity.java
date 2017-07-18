@@ -1,5 +1,6 @@
 package com.example.leon.xixiweather;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Build;
@@ -22,6 +23,7 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.example.leon.xixiweather.gson.Forecast;
 import com.example.leon.xixiweather.gson.Weather;
+import com.example.leon.xixiweather.service.AutoUpdateService;
 import com.example.leon.xixiweather.util.HttpUtil;
 import com.example.leon.xixiweather.util.Utility;
 
@@ -142,7 +144,7 @@ public class WeatherActivity extends AppCompatActivity {
         HttpUtil.sendOkHttpRequest(weatherUrl, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-                e.printStackTrace();;
+                e.printStackTrace();
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -177,6 +179,7 @@ public class WeatherActivity extends AppCompatActivity {
     }
 
     private void showWeatherInfo(Weather weather) {
+
         String cityName = weather.basic.cityNmae;
         String updateTime = weather.basic.update.updateTime.split(" ")[1];
         String degree= weather.now.temperature + "℃";
@@ -210,6 +213,8 @@ public class WeatherActivity extends AppCompatActivity {
         carWashText.setText(carWash);
         sportText.setText(sport);
         weatherLayout.setVisibility(View.VISIBLE);
+        Intent intent = new Intent(this, AutoUpdateService.class);
+        startService(intent);
 
 
 
