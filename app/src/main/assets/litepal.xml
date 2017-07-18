@@ -1,5 +1,5 @@
 <litepal>
-    <db value="cool_weather"/>
+    <dbname   value="cool_weather"/>
     <version value="1"/>
     <list>
         <mapping class="com.example.leon.xixiweather.db.City"/>
