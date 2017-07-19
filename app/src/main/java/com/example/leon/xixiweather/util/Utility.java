@@ -84,7 +84,7 @@ public  static Weather handleWeatherResponse(String response){
         JSONArray jsonArray =jsonObject.getJSONArray("HeWeather");
         String weatherContent =jsonArray.getJSONObject(0).toString();
         return  new Gson().fromJson(weatherContent ,Weather.class);
-    } catch (JSONException e) {
+    } catch (Exception e) {
         e.printStackTrace();
     }
     return null;

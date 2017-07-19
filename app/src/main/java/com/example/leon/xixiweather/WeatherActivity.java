@@ -112,7 +112,7 @@ public class WeatherActivity extends AppCompatActivity {
          );
          getWindow().setStatusBarColor(Color.TRANSPARENT);
      }
-     setContentView(R.layout.activity_weather);
+
     }
 
     private void loadBingPic() {
@@ -140,8 +140,30 @@ public class WeatherActivity extends AppCompatActivity {
     }
 
     public void  requestWeather(final String weatherId){
-        String weatherUrl="http://guolin.tech/api/weather?cityid="+weatherId+"21d8b0fe6ef94b6aa4f15ac92d987b35";
+        String weatherUrl="http://guolin.tech/api/weather?cityid="+weatherId+"&key=21d8b0fe6ef94b6aa4f15ac92d987b35";
         HttpUtil.sendOkHttpRequest(weatherUrl, new Callback() {
+
+
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+            final String  responseText=response.body().string();
+                final Weather weather=Utility.handleWeatherResponse(responseText);
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (weather !=null && "ok".equals(weather.status)){
+                            SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(WeatherActivity.this).edit();
+                            editor.putString("weather",responseText);
+                            editor.apply();
+                            showWeatherInfo(weather);
+                        }else{
+                            Toast.makeText(WeatherActivity.this,"获取天气信息失败",Toast.LENGTH_SHORT).show();
+                        }
+                        swipeRefesh.setRefreshing(false);
+                    }
+                });
+            }
             @Override
             public void onFailure(Call call, IOException e) {
                 e.printStackTrace();
@@ -154,28 +176,7 @@ public class WeatherActivity extends AppCompatActivity {
 
                 });
                 loadBingPic();
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-            final String  responseText=response.body().string();
-                final Weather weather=Utility.handleWeatherResponse(responseText);
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (weather!=null&&"ok".equals(weather.status)){
-                            SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(WeatherActivity.this).edit();
-                            editor.putString("weather",responseText);
-                            editor.apply();
-                            showWeatherInfo(weather);
-                        }else{
-                            Toast.makeText(WeatherActivity.this,"获取天气信息失败",Toast.LENGTH_SHORT).show();
-                        }
-                        swipeRefesh.setRefreshing(false);
-                    }
-                });
-            }
-        });
+            }});
     }
 
     private void showWeatherInfo(Weather weather) {

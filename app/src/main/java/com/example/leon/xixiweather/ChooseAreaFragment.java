@@ -138,7 +138,7 @@ public class ChooseAreaFragment extends Fragment {
 
 
     private void queryCounties() {
-    titleText.setText(selectedCity.getCityCode());
+    titleText.setText(selectedCity.getCityNmae());
         backButton.setVisibility(View.VISIBLE);
         countyList=DataSupport.where("cityid = ?",String.valueOf(selectedCity.getId())).find(County.class);
         if (countyList.size()>0){
@@ -147,19 +147,20 @@ public class ChooseAreaFragment extends Fragment {
                 dataList.add(county.getCountyNmae());
             }
             adapter.notifyDataSetChanged();
-            listView.setSelection(2);
+            listView.setSelection(0);
             currentLevel=LEVEL_COUNTY;
         }else{
             int  cityCode = selectedCity.getCityCode();
             int provinceCode = selectedProvince.getProvinceCode();
             String address="http://guolin.tech/api/china/"+provinceCode+"/"+cityCode;
+            queryFromServer(address,"county");
         }
     }
 
     private void queryCities() {
         titleText.setText(selectedProvince.getProvinceName());
         backButton.setVisibility(View.VISIBLE);
-        cityList = DataSupport.where("probinceid = ?",String.valueOf(selectedProvince.getId())).find(City.class);
+        cityList = DataSupport.where("provinceid = ?",String.valueOf(selectedProvince.getId())).find(City.class);
         if (cityList.size()>0){
             dataList.clear();
             for (City city:cityList){
@@ -167,12 +168,12 @@ public class ChooseAreaFragment extends Fragment {
 
             }
             adapter.notifyDataSetChanged();
-            listView.setSelection(1);
+            listView.setSelection(0);
             currentLevel=LEVEL_CITY;
         }else {
             int provinceCode = selectedProvince.getProvinceCode();
             String address="http://guolin.tech/api/china/"+provinceCode;
-            queryFromServer(address,"City");
+            queryFromServer(address,"city");
         }
     }
     private void queryFromServer(String address, final  String type) {
@@ -208,6 +209,7 @@ public class ChooseAreaFragment extends Fragment {
                     try {
                         result=Utility.handleCityResponse(responseText,selectedProvince.getId());
                     } catch (JSONException e) {
+
                         e.printStackTrace();
                     }
                 }else if("county".equals(type)){
